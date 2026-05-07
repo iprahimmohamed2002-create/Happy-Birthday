@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Happy Birthday!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Nunito:wght@400;700;900&display=swap');
+
+        body {
+            margin: 0;
+            font-family: 'Nunito', sans-serif;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .font-cursive { font-family: 'Caveat', cursive; }
+
+        /* Confetti */
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0.5; }
+        }
+        .confetti-piece { position: absolute; border-radius: 50%; z-index: 20; }
+
+        /* Float Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+
+        /* Full Screen Grid Background */
+        .bg-grid-pattern {
+            background-size: 35px 35px;
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.7) 2px, transparent 2px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.7) 2px, transparent 2px);
+            background-color: #ffb8c6; 
+        }
+
+        /* 3D Utilities */
+        .perspective-1500 { perspective: 1500px; }
+        .preserve-3d { transform-style: preserve-3d; }
+        .backface-hidden { -webkit-backface-visibility: hidden; backface-visibility: hidden; }
+        .origin-left { transform-origin: left center; }
+        .origin-top { transform-origin: top center; }
+        .rotate-y-180-neg { transform: rotateY(-180deg); }
+        .rotate-x-180 { transform: rotateX(180deg); }
+
+        /* Heart Drawing Animation (Whole Heart) */
+        .draw-path {
+            stroke-dasharray: 400;
+            stroke-dashoffset: 400;
+        }
+        .animate-draw {
+            animation: drawLine 2s ease-in-out forwards; 
+        }
+        @keyframes drawLine {
+            to { stroke-dashoffset: 0; }
+        }
+        .heart-fill {
+            opacity: 0;
+            animation: fillHeart 0.5s ease-in forwards 2s;
+        }
+        @keyframes fillHeart {
+            to { opacity: 1; fill: #ff4d4d; stroke: transparent; }
+        }
+
+        /* Polaroid Album Styles */
+        .polaroid {
+            background: #fff;
+            padding: 12px 12px 40px 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-radius: 4px;
+            border: 2px solid #1f2937;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        .polaroid:hover {
+            transform: scale(1.1) rotate(0deg) !important;
+            z-index: 50;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        /* Screens */
+        .screen { display: none; }
+        .screen.active { display: flex; }
+    </style>
+</head>
+<body class="w-full min-h-screen text-gray-800 bg-gray-50">
+
+    <!-- 1. LOADING SCREEN -->
+    <div id="loading-screen" class="screen active flex-col items-center justify-center w-full h-screen bg-gradient-to-br from-[#ff9a9e] to-[#fecfef] text-white relative">
+        <div class="animate-bounce mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="drop-shadow-xl"><path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8"/><path d="M4 16s.5-1 2-1 2.5 2 4 2 2.5-2 4-2 2.5 2 4 2 2-1 2-1"/><path d="M2 21h20"/><path d="M7 8v3"/><path d="M12 8v3"/><path d="M17 8v3"/><path d="M7 4h.01"/><path d="M12 4h.01"/><path d="M17 4h.01"/></svg>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold animate-pulse text-center px-4 drop-shadow-md">
+            Happy 24th Birthday! <br /> <span class="font-cursive text-5xl md:text-6xl text-red-500 mt-2 block">Rana</span>
+        </h1>
+        <div class="absolute top-10 left-10 w-32 h-32 bg-white/20 rounded-full blur-2xl"></div>
+        <div class="absolute bottom-20 right-20 w-64 h-64 bg-red-400/20 rounded-full blur-3xl"></div>
+    </div>
+
+    <!-- 2. HOME SCREEN -->
+    <div id="home-screen" class="screen flex-col md:flex-row w-full min-h-screen relative overflow-hidden bg-grid-pattern">
+        <div id="confetti-container" class="absolute inset-0 pointer-events-none overflow-hidden z-20"></div>
+
+        <!-- Floating Balloon (Now visible on mobile too) -->
+        <div class="absolute top-[8%] right-[2%] md:top-[15%] md:right-[15%] w-16 h-28 md:w-24 md:h-40 animate-float z-10 pointer-events-none block">
+            <svg viewBox="0 0 100 200" class="w-full h-full drop-shadow-xl">
+                <path d="M50 110 Q40 140 50 170 T50 200" stroke="#1f2937" stroke-width="2" fill="none"/>
+                <ellipse cx="50" cy="60" rx="35" ry="45" fill="#f472b6" stroke="#1f2937" stroke-width="3"/>
+                <path d="M45 105 L55 105 L50 115 Z" fill="#f472b6" stroke="#1f2937" stroke-width="3"/>
+                <path d="M30 45 Q35 25 50 20" stroke="white" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.6"/>
+            </svg>
+        </div>
+
+        <!-- Left Column -->
+        <div class="w-full md:w-1/2 min-h-[50vh] md:h-screen flex flex-col justify-center px-6 md:px-20 relative z-10 pt-16 md:pt-0">
+            <div class="relative inline-block mb-6 w-max">
+                <svg viewBox="0 0 64 64" class="absolute -top-12 md:-top-16 left-6 md:left-10 w-16 h-16 md:w-20 md:h-20 transform -rotate-12 drop-shadow-lg z-20">
+                    <path d="M12 50 L32 10 L52 50 Z" fill="#3b82f6" stroke="#1f2937" stroke-width="3" stroke-linejoin="round"/>
+                    <path d="M12 50 Q32 60 52 50" fill="#3b82f6" stroke="#1f2937" stroke-width="3"/>
+                    <circle cx="32" cy="10" r="6" fill="#ef4444" stroke="#1f2937" stroke-width="3"/>
+                    <path d="M22 30 L42 30" stroke="#fcd34d" stroke-width="4"/>
+                    <path d="M17 40 L47 40" stroke="#fcd34d" stroke-width="4"/>
+                </svg>
+
+                <h1 class="text-5xl sm:text-6xl md:text-8xl font-black text-white leading-tight tracking-wide" 
+                    style="-webkit-text-stroke: 2px #1f2937; text-shadow: 6px 6px 0px #ef4444, 2px 2px 0px #1f2937;">
+                    Happy <br /> Birthday
+                </h1>
+            </div>
+            
+            <div class="flex items-center gap-4 mb-8">
+                <span class="bg-[#ff4757] text-white px-6 py-2 rounded-full font-black shadow-md transform -rotate-2 border-2 border-gray-800 text-lg">8 May</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="drop-shadow-sm"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 mb-16 md:mb-12">
+                <button onclick="showPopup('clickHerePopup')" class="bg-[#ff4757] text-white px-6 py-3 rounded-xl flex items-center justify-center gap-2 shadow-[0_6px_0_#c0392b] active:translate-y-1 active:shadow-none transition-all font-bold hover:bg-red-500 border-2 border-gray-800 text-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5.8 11.3 2 22l10.7-3.79"/><path d="M4 3h.01"/><path d="M22 8h.01"/><path d="M15 2h.01"/><path d="M22 20h.01"/><path d="m22 2-2.24.75a2.9 2.9 0 0 0-1.96 3.12v0c.1.86-.57 1.63-1.45 1.63h-.38c-.86 0-1.6.6-1.76 1.44L14 10"/><path d="m22 13-.82-.33c-.86-.34-1.82.2-1.98 1.11v0c-.11.7-.72 1.22-1.43 1.22H17"/><path d="m11 2 .33.82c.34.86-.2 1.82-1.11 1.98v0C9.52 4.91 9 5.52 9 6.23V7"/><path d="M11 13c1.93 1.93 2.83 4.17 2 5-.83.83-3.07-.07-5-2-1.93-1.93-2.83-4.17-2-5 .83-.83 3.07.07 5 2Z"/></svg>
+                    Click Here Rana
+                </button>
+                <button onclick="showPopup('cardPopup')" class="bg-white text-[#ff4757] px-6 py-3 rounded-xl flex items-center justify-center gap-2 shadow-[0_6px_0_#dcdde1] active:translate-y-1 active:shadow-none transition-all font-bold border-2 border-gray-800 text-lg hover:bg-pink-50">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                    From Hima
+                </button>
+            </div>
+
+            <button onclick="triggerHeartTransition()" class="absolute bottom-6 md:bottom-8 left-6 md:left-8 text-gray-800 font-bold hover:text-red-600 transition-colors flex items-center gap-2 text-xl drop-shadow-md border-b-2 border-gray-800">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff4757" stroke-width="2.5"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                Love Letter ➔
+            </button>
+        </div>
+
+        <!-- Right Column (Image with Arrow) -->
+        <div class="w-full md:w-1/2 min-h-[50vh] md:h-screen relative flex items-center justify-center p-8 z-0 overflow-visible">
+            <div class="relative transform hover:scale-105 transition-transform duration-500">
+                
+                <div class="absolute -top-12 -left-6 md:-top-16 md:-left-16 z-30 animate-pulse">
+                    <span class="font-cursive text-3xl md:text-5xl text-[#ff4757] drop-shadow-md">Dear Rana</span>
+                    <svg viewBox="0 0 100 100" class="w-16 h-16 md:w-24 md:h-24 transform rotate-12 text-gray-800 mt-1 ml-4 md:ml-8">
+                        <path d="M10 90 Q 30 20, 80 50" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-dasharray="8,8"/>
+                        <path d="M65 35 L85 55 L60 65" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+
+                <!-- Increased the size of the photo container for all devices & made it clickable for the album -->
+                <div onclick="showScreen('album-screen')" class="cursor-pointer group w-[80vw] h-[80vw] max-w-[350px] max-h-[350px] md:w-[40vw] md:h-[40vw] md:max-w-[500px] md:max-h-[500px] rounded-full border-[8px] md:border-[12px] border-white overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.2)] relative z-10 bg-pink-200 flex items-center justify-center">
+                    <img src="https://live.staticflickr.com/65535/55253591262_b02d7a7329_b.jpg" alt="Birthday celebration" onerror="this.src='https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&q=80&w=800'" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"/>
+                    
+                    <!-- Hover overlay for the Album -->
+                    <div class="absolute inset-0 bg-black/30 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" class="mb-2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                        <span class="text-white font-bold text-2xl font-cursive tracking-wider drop-shadow-md">Open Album</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. PHOTO ALBUM SCREEN -->
+    <div id="album-screen" class="screen flex-col w-full min-h-screen bg-[#ffc4d3] bg-grid-pattern relative items-center py-12 md:py-20 overflow-y-auto overflow-x-hidden">
+        
+        <button onclick="showScreen('home-screen')" class="fixed top-4 left-4 md:top-8 md:left-8 text-gray-800 bg-white border-2 border-gray-800 px-4 md:px-6 py-2 rounded-full hover:bg-pink-50 transition z-[100] font-bold shadow-[0_4px_0_#1f2937] active:translate-y-1 active:shadow-none flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg> Back
+        </button>
+
+        <h2 class="text-5xl md:text-7xl font-black text-white leading-tight tracking-wide mb-12 mt-12 md:mt-0 text-center px-4 z-10" style="-webkit-text-stroke: 2px #1f2937; text-shadow: 4px 4px 0px #ef4444, 2px 2px 0px #1f2937;">
+            Us ❤️
+        </h2>
+
+        <!-- Masonry / Scattered Polaroid Grid -->
+        <div class="flex flex-wrap justify-center items-center max-w-6xl gap-6 md:gap-10 px-4 pb-20 z-10">
+            
+            <!-- Polaroid 1 -->
+            <div class="polaroid w-[40vw] max-w-[220px] md:w-64 transform rotate-[-4deg]">
+                <img src="https://live.staticflickr.com/65535/55253582207_bb46f58f09_b.jpg" onerror="this.src='https://images.unsplash.com/photo-1511895426328-dc8714191300?w=500&auto=format&fit=crop'" class="w-full h-40 md:h-64 object-cover border border-gray-200">
+                <p class="font-cursive text-center text-red-500 mt-4 text-xl md:text-2xl font-bold">Our</p>
+            </div>
+
+            <!-- Polaroid 2 -->
+            <div class="polaroid w-[40vw] max-w-[220px] md:w-64 transform rotate-[3deg]">
+                <img src="https://live.staticflickr.com/65535/55254470731_b74200f946_b.jpg" onerror="this.src='https://images.unsplash.com/photo-1522228115018-d838bcce5c3a?w=500&auto=format&fit=crop'" class="w-full h-40 md:h-64 object-cover border border-gray-200">
+                <p class="font-cursive text-center text-red-500 mt-4 text-xl md:text-2xl font-bold">Beautiful</p>
+            </div>
+
+            <!-- Polaroid 3 -->
+            <div class="polaroid w-[40vw] max-w-[220px] md:w-64 transform rotate-[-2deg]">
+                <img src="https://live.staticflickr.com/65535/55254619453_e594f4ccde_b.jpg" onerror="this.src='https://images.unsplash.com/photo-1532452119098-a3650b3c46d3?w=500&auto=format&fit=crop'" class="w-full h-40 md:h-64 object-cover border border-gray-200">
+                <p class="font-cursive text-center text-red-500 mt-4 text-xl md:text-2xl font-bold">Memories</p>
+            </div>
+
+            <!-- Polaroid 4 -->
+            <div class="polaroid w-[40vw] max-w-[220px] md:w-64 transform rotate-[5deg]">
+                <img src="https://live.staticflickr.com/65535/55253582217_4bdeec68ab_b.jpg" onerror="this.src='https://images.unsplash.com/photo-1494972308805-463bc619d34e?w=500&auto=format&fit=crop'" class="w-full h-40 md:h-64 object-cover border border-gray-200">
+                <p class="font-cursive text-center text-red-500 mt-4 text-xl md:text-2xl font-bold">and</p>
+            </div>
+
+            <!-- Polaroid 5 -->
+            <div class="polaroid w-[40vw] max-w-[220px] md:w-64 transform rotate-[-5deg]">
+                <img src="https://live.staticflickr.com/65535/55253582302_e1b62cd947_b.jpg" onerror="this.src='https://images.unsplash.com/photo-1506869640319-fea1a275302f?w=500&auto=format&fit=crop'" class="w-full h-40 md:h-64 object-cover border border-gray-200">
+                <p class="font-cursive text-center text-red-500 mt-4 text-xl md:text-2xl font-bold">Laughter</p>
+            </div>
+
+            <!-- Polaroid 6 -->
+            <div class="polaroid w-[40vw] max-w-[220px] md:w-64 transform rotate-[2deg]">
+                <img src="https://live.staticflickr.com/65535/55253582627_2c683db3b0_b.jpg" onerror="this.src='https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=500&auto=format&fit=crop'" class="w-full h-40 md:h-64 object-cover border border-gray-200">
+                <p class="font-cursive text-center text-red-500 mt-4 text-xl md:text-2xl font-bold">Will</p>
+            </div>
+
+            <!-- Polaroid 7 -->
+            <div class="polaroid w-[40vw] max-w-[220px] md:w-64 transform rotate-[-3deg]">
+                <img src="https://live.staticflickr.com/65535/55254713129_e21c2ed992_b.jpg" onerror="this.src='https://images.unsplash.com/photo-1516483638261-f40889280a2c?w=500&auto=format&fit=crop'" class="w-full h-40 md:h-64 object-cover border border-gray-200">
+                <p class="font-cursive text-center text-red-500 mt-4 text-xl md:text-2xl font-bold">Last</p>
+            </div>
+
+            <!-- Polaroid 8 -->
+            <div class="polaroid w-[40vw] max-w-[220px] md:w-64 transform rotate-[4deg]">
+                <img src="https://live.staticflickr.com/65535/55254713164_2ae2a2a738_b.jpg" onerror="this.src='https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?w=500&auto=format&fit=crop'" class="w-full h-40 md:h-64 object-cover border border-gray-200">
+                <p class="font-cursive text-center text-red-500 mt-4 text-xl md:text-2xl font-bold">Forever ❤️</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- POPUPS -->
+    <div id="clickHerePopup" class="fixed inset-0 bg-black/40 z-50 hidden flex-col items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white p-6 md:p-8 rounded-3xl shadow-[0_20px_50px_rgba(255,71,87,0.3)] w-[90vw] max-w-[340px] relative transform -rotate-2 border-[6px] border-pink-200 animate-[bounce_0.5s_ease-out_1] mt-8">
+            <button onclick="hidePopup('clickHerePopup')" class="absolute -top-5 -right-5 bg-white text-gray-800 border-[3px] border-gray-800 rounded-full p-2 shadow-lg hover:bg-pink-100 hover:scale-110 transition-transform z-10">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            
+            <!-- Decorative Pin -->
+            <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 bg-red-500 rounded-full shadow-md border-2 border-white z-10"></div>
+            
+            <h3 class="font-cursive font-bold text-3xl md:text-4xl mb-4 text-red-500 border-b-2 border-pink-100 pb-3 text-center mt-2">Happy birthday,</h3>
+            <p class="text-gray-700 leading-relaxed font-medium text-sm md:text-base text-center">
+                Happy birthday to the most gorgeous girl. I want to wish you a lifetime of unending happiness. May your heart always feel light ya Rana ❤️.
+            </p>
+            
+            <div class="flex justify-center mt-6">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#ff4757" stroke="none" class="animate-pulse"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+            </div>
+        </div>
+    </div>
+
+    <div id="cardPopup" class="fixed inset-0 bg-black/60 z-50 hidden flex-col items-center justify-center p-4 backdrop-blur-md">
+        <div class="absolute inset-0" onclick="hidePopup('cardPopup')"></div>
+        <div class="relative w-[85vw] max-w-[380px] h-[70vh] min-h-[400px] max-h-[500px] perspective-1500 cursor-pointer group" onclick="toggleCard()">
+            <!-- Inside Right -->
+            <div class="absolute inset-0 bg-[#fff5f7] rounded-r-xl shadow-2xl p-6 md:p-8 flex flex-col z-0 border border-pink-100">
+                <h3 class="text-red-500 font-bold text-2xl md:text-3xl mb-2 md:mb-4 text-center mt-2 md:mt-4">To YOU!</h3>
+                <div class="flex-1 overflow-y-auto text-center px-2">
+                    <p class="text-gray-700 font-cursive text-xl md:text-2xl leading-relaxed">
+                        Happy Birthday, Rana ❤️ <br/><br/>
+                        From the moment we met, something in my life shifted—like the universe quietly guiding me toward someone meant for me. You brought warmth into the parts of me I didn't even know were cold.
+                        <br/><br/>
+                        <span class="text-red-400">Your Best Friend & Lover, Hima</span>
+                    </p>
+                </div>
+            </div>
+            <!-- Cover Flap -->
+            <div id="card-cover" class="absolute inset-0 preserve-3d origin-left transition-transform duration-1000 ease-in-out z-10">
+                <div class="absolute inset-0 bg-gradient-to-br from-pink-400 to-red-400 rounded-lg shadow-[5px_0_15px_rgba(0,0,0,0.2)] p-6 backface-hidden flex flex-col items-center justify-center text-white border-l-8 border-pink-600 group-hover:shadow-[15px_0_25px_rgba(0,0,0,0.3)] transition-shadow">
+                    <p class="font-cursive text-2xl md:text-3xl mb-4 text-pink-100 opacity-90">Dear Rana</p>
+                    <h2 class="text-4xl md:text-6xl font-black mb-6 text-center drop-shadow-xl leading-tight">Happy<br/>Birthday!</h2>
+                    <div class="bg-white/20 p-3 md:p-4 rounded-xl text-center backdrop-blur-sm border border-white/30 shadow-inner w-full">
+                        <p class="text-xs md:text-sm font-bold tracking-wide">A purr-fect message list for you...</p>
+                    </div>
+                </div>
+                <!-- Inside Left -->
+                <div class="absolute inset-0 bg-[#ffebf0] rounded-l-xl shadow-inner p-6 backface-hidden flex flex-col items-center justify-center rotate-y-180 text-red-500 font-black text-3xl md:text-4xl border border-pink-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="text-red-400 mb-6 animate-pulse"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                    <span class="text-center drop-shadow-sm">Happy<br/>Birthday!</span>
+                </div>
+            </div>
+        </div>
+        <p id="card-hint" class="absolute bottom-6 md:bottom-10 text-white font-bold tracking-widest animate-pulse pointer-events-none text-sm md:text-base">CLICK TO OPEN</p>
+    </div>
+
+    <!-- 4. HEART TRANSITION (Whole Heart) -->
+    <div id="heart-screen" class="screen flex-col items-center justify-center w-full h-screen bg-[#d60000]">
+        <svg viewBox="0 0 100 100" class="w-48 h-48 md:w-64 md:h-64 overflow-visible">
+            <path id="heart-path" class="draw-path heart-fill" d="M 50 85 C 50 85 10 55 10 30 C 10 15 25 10 40 20 C 50 30 50 30 50 30 C 50 30 50 30 60 20 C 75 10 90 15 90 30 C 90 55 50 85 50 85 Z" fill="transparent" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </div>
+
+    <!-- 5. ENVELOPE SCREEN (Drag Version) -->
+    <div id="envelope-screen" class="screen w-full min-h-screen bg-[#c20000] relative flex-col items-center justify-center overflow-hidden select-none">
+        <div id="bg-hearts" class="absolute inset-0 pointer-events-none opacity-20"></div>
+
+        <button onclick="goBackHome()" class="absolute top-6 left-6 text-white bg-black/20 px-4 py-2 rounded-full hover:bg-black/40 transition z-[100]">Back</button>
+
+        <div id="envelope-container" onclick="openEnvelope()" class="relative w-[300px] h-[200px] md:w-[450px] md:h-[280px] bg-[#e3d1c1] shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-center justify-center mt-12 border-2 border-[#1f2937] cursor-pointer hover:scale-105 transition-transform duration-300">
+            
+            <!-- Top Flap -->
+            <div id="envelope-flap" class="absolute top-0 left-0 w-full h-[60%] origin-top transition-transform duration-[800ms] ease-in-out z-40 flex justify-center">
+                <div class="w-0 h-0 border-l-[150px] md:border-l-[225px] border-r-[150px] md:border-r-[225px] border-t-[120px] md:border-t-[168px] border-l-transparent border-r-transparent border-t-[#f2e6d9] drop-shadow-md"></div>
+                <div id="flap-content" class="absolute top-6 md:top-8 w-full text-center transition-opacity duration-300 pointer-events-none">
+                    <h2 class="text-red-600 font-cursive text-xl md:text-3xl">Envelope Of Love</h2>
+                    <p class="text-red-500 font-cursive text-lg md:text-xl md:mt-1">Dear Rana</p>
+                </div>
+                <div id="wax-seal" class="absolute -bottom-4 md:-bottom-5 bg-red-600 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center shadow-lg transition-opacity duration-300 border-2 border-[#1f2937] pointer-events-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="none"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                </div>
+            </div>
+
+            <!-- TWO DRAGGABLE LETTERS -->
+            <div id="letter-1" class="draggable-letter absolute w-[85vw] max-w-[320px] p-6 md:p-8 bg-[#fffbf2] shadow-2xl text-gray-800 font-cursive border-2 border-[#1f2937] flex flex-col transition-all duration-500 pointer-events-auto cursor-grab rounded-sm z-20" style="top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.6); opacity: 0;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="text-red-400 absolute top-3 right-3 opacity-50 pointer-events-none"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                
+                <p class="leading-relaxed text-lg md:text-xl mb-6 pointer-events-none text-center">
+                    I love you in every Language and every universe ❤️ <br> Te amo , Je t'aime , بحبك , Ich liebe dich , Ti amo , 愛してる
+                </p>
+                <p class="text-right text-red-500 font-bold text-lg md:text-xl pointer-events-none">Hima</p>
+            </div>
+
+            <div id="letter-2" class="draggable-letter absolute w-[85vw] max-w-[320px] p-6 md:p-8 bg-[#fffbf2] shadow-2xl text-gray-800 font-cursive border-2 border-[#1f2937] flex flex-col transition-all duration-500 pointer-events-auto cursor-grab rounded-sm z-20" style="top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.6); opacity: 0;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="text-red-400 absolute top-3 right-3 opacity-50 pointer-events-none"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                
+                <p class="leading-relaxed text-lg md:text-xl mb-6 pointer-events-none text-center">
+                    Your laugh is the most beautiful sound I have ever known, reaching places in my heart I didn't even know existed. Just catching the sparkle in your eyes when you smile is enough to make my heart skip a beat and jump from my chest. Sometimes I look at you and I am entirely undone—you are so incredibly gorgeous that it actually overwhelms me. May Allah keep you safe always, and may He write our story as one that lasts forever. <br><br> Happy Birthday, my love ❤️
+                </p>
+                <p class="text-right text-red-500 font-bold text-lg md:text-xl pointer-events-none">Hima</p>
+
+                <!-- Drag Hint -->
+                <div id="drag-hint" class="absolute -bottom-10 left-1/2 transform -translate-x-1/2 text-white font-sans font-bold text-sm bg-black/50 px-4 py-1.5 rounded-full animate-bounce whitespace-nowrap opacity-0 transition-opacity duration-300 pointer-events-none tracking-wide">
+                    Drag us out! ↑
+                </div>
+            </div>
+
+            <!-- Bottom Flap -->
+            <div class="absolute bottom-0 left-0 w-full h-[65%] z-30 pointer-events-none overflow-hidden">
+                <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[150px] md:border-l-[225px] border-r-[150px] md:border-r-[225px] border-b-[130px] md:border-b-[182px] border-l-transparent border-r-transparent border-b-[#d9c5b2] drop-shadow-[-5px_-5px_10px_rgba(0,0,0,0.1)]"></div>
+            </div>
+            <!-- Left Flap -->
+            <div class="absolute top-0 left-0 w-1/2 h-full z-30 pointer-events-none">
+                <div class="w-0 h-0 border-t-[100px] md:border-t-[140px] border-b-[100px] md:border-b-[140px] border-l-[150px] md:border-l-[225px] border-t-transparent border-b-transparent border-l-[#e0cebc]"></div>
+            </div>
+            <!-- Right Flap -->
+            <div class="absolute top-0 right-0 w-1/2 h-full z-30 pointer-events-none flex justify-end">
+                <div class="w-0 h-0 border-t-[100px] md:border-t-[140px] border-b-[100px] md:border-b-[140px] border-r-[150px] md:border-r-[225px] border-t-transparent border-b-transparent border-r-[#e0cebc]"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- SCREEN & APP LOGIC ---
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            // Scroll to top when changing screens (especially for the album)
+            window.scrollTo(0, 0); 
+        }
+
+        // Changed from window.onload so it doesn't freeze waiting for missing images!
+        document.addEventListener('DOMContentLoaded', () => {
+            generateConfetti();
+            generateBgHearts();
+            initDragLogic(); // Initialize the drag events for the letter
+            setTimeout(() => { showScreen('home-screen'); }, 3500);
+        });
+
+        function showPopup(id) {
+            document.getElementById(id).classList.remove('hidden');
+            document.getElementById(id).classList.add('flex');
+        }
+        function hidePopup(id) {
+            document.getElementById(id).classList.add('hidden');
+            document.getElementById(id).classList.remove('flex');
+        }
+
+        function toggleCard() {
+            document.getElementById('card-cover').classList.toggle('rotate-y-180-neg');
+            document.getElementById('card-hint').classList.add('hidden');
+        }
+
+        function triggerHeartTransition() {
+            showScreen('heart-screen');
+            document.getElementById('heart-path').classList.add('animate-draw');
+            
+            setTimeout(() => { showScreen('envelope-screen'); }, 3000);
+        }
+
+        // --- ENVELOPE & DRAG LOGIC ---
+        let activeLetter = null;
+        let startDragX = 0, startDragY = 0;
+        const dragHint = document.getElementById('drag-hint');
+
+        function openEnvelope() {
+            // Disable clicking the envelope again while it's open
+            const envContainer = document.getElementById('envelope-container');
+            envContainer.classList.remove('cursor-pointer', 'hover:scale-105');
+            envContainer.onclick = null;
+
+            document.getElementById('envelope-flap').classList.add('rotate-x-180', 'z-0');
+            document.getElementById('flap-content').style.opacity = '0';
+            document.getElementById('wax-seal').style.opacity = '0';
+
+            // Letters peek out of the envelope
+            setTimeout(() => {
+                const letters = document.querySelectorAll('.draggable-letter');
+                
+                // Letter 1 (Back)
+                let l1 = letters[0];
+                l1.style.opacity = '1';
+                l1.dataset.offsetX = -10;
+                l1.dataset.offsetY = -120;
+                l1.dataset.baseRot = -4;
+                l1.style.transform = `translate(calc(-50% - 10px), calc(-50% - 120px)) rotate(-4deg) scale(1)`;
+                l1.style.zIndex = '50';
+                
+                // Letter 2 (Front)
+                let l2 = letters[1];
+                l2.style.opacity = '1';
+                l2.dataset.offsetX = 10;
+                l2.dataset.offsetY = -90;
+                l2.dataset.baseRot = 4;
+                l2.style.transform = `translate(calc(-50% + 10px), calc(-50% - 90px)) rotate(4deg) scale(1)`;
+                l2.style.zIndex = '51';
+
+                setTimeout(() => { dragHint.style.opacity = '1'; }, 500);
+
+            }, 400); 
+        }
+
+        function initDragLogic() {
+            document.querySelectorAll('.draggable-letter').forEach(letter => {
+                letter.dataset.offsetX = 0;
+                letter.dataset.offsetY = 0;
+                letter.dataset.baseRot = 0;
+
+                // Touch events
+                letter.addEventListener('touchstart', dragStart, {passive: false});
+                // Mouse events
+                letter.addEventListener('mousedown', dragStart);
+            });
+
+            window.addEventListener('touchmove', drag, {passive: false});
+            window.addEventListener('touchend', dragEnd);
+            window.addEventListener('mousemove', drag);
+            window.addEventListener('mouseup', dragEnd);
+        }
+
+        function dragStart(e) {
+            let el = e.currentTarget;
+            if (el.style.opacity === '0') return; 
+
+            // Bring to front
+            document.querySelectorAll('.draggable-letter').forEach(l => l.style.zIndex = '50');
+            el.style.zIndex = '60';
+
+            activeLetter = el;
+            el.style.transition = 'none'; 
+            el.style.cursor = 'grabbing';
+            dragHint.style.opacity = '0'; 
+
+            let clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            let clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+
+            startDragX = clientX - parseFloat(el.dataset.offsetX || 0);
+            startDragY = clientY - parseFloat(el.dataset.offsetY || 0);
+        }
+
+        function drag(e) {
+            if (!activeLetter) return;
+            e.preventDefault(); 
+
+            let clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            let clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+
+            let offsetX = clientX - startDragX;
+            let offsetY = clientY - startDragY;
+
+            activeLetter.dataset.offsetX = offsetX;
+            activeLetter.dataset.offsetY = offsetY;
+
+            let baseRot = activeLetter.dataset.baseRot || 0;
+            activeLetter.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px)) rotate(${baseRot}deg) scale(1.02)`;
+        }
+
+        function dragEnd() {
+            if (!activeLetter) return;
+            activeLetter.style.cursor = 'grab';
+            activeLetter.style.transition = 'transform 0.3s ease-out'; 
+            
+            let offsetX = activeLetter.dataset.offsetX;
+            let offsetY = activeLetter.dataset.offsetY;
+            let baseRot = activeLetter.dataset.baseRot || 0;
+
+            activeLetter.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px)) rotate(${baseRot}deg) scale(1)`;
+            activeLetter = null;
+        }
+
+        function goBackHome() {
+            document.getElementById('envelope-flap').classList.remove('rotate-x-180', 'z-0');
+            document.getElementById('flap-content').style.opacity = '1';
+            document.getElementById('wax-seal').style.opacity = '1';
+            
+            // Re-enable envelope clicking
+            const envContainer = document.getElementById('envelope-container');
+            envContainer.classList.add('cursor-pointer', 'hover:scale-105');
+            envContainer.onclick = openEnvelope;
+            
+            // Reset Letters completely back into the envelope pocket
+            document.querySelectorAll('.draggable-letter').forEach(letter => {
+                letter.style.transition = 'all 0.5s ease-in-out';
+                letter.style.opacity = '0';
+                letter.style.transform = 'translate(-50%, -50%) rotate(0deg) scale(0.6)';
+                letter.style.zIndex = '20';
+                letter.dataset.offsetX = 0;
+                letter.dataset.offsetY = 0;
+                letter.dataset.baseRot = 0;
+            });
+            dragHint.style.opacity = '0';
+
+            showScreen('home-screen');
+        }
+
+        // --- BACKGROUND GENERATORS ---
+        function generateConfetti() {
+            const colors = ['#ff4757', '#ff7eb3', '#fbc531', '#4cd137', '#00a8ff', '#9c88ff'];
+            const container = document.getElementById('confetti-container');
+            for(let i=0; i<60; i++) {
+                let div = document.createElement('div');
+                div.className = 'confetti-piece border-2 border-[#1f2937]';
+                div.style.left = Math.random() * 100 + '%';
+                div.style.top = '-5%';
+                div.style.width = (Math.random() * 8 + 6) + 'px';
+                div.style.height = (Math.random() * 16 + 10) + 'px';
+                div.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                div.style.animation = `fall ${Math.random() * 3 + 2.5}s linear infinite`;
+                div.style.animationDelay = (Math.random() * 5) + 's';
+                container.appendChild(div);
+            }
+        }
+
+        function generateBgHearts() {
+            const container = document.getElementById('bg-hearts');
+            const svgStr = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="none"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`;
+            for(let i=0; i<20; i++) {
+                let wrapper = document.createElement('div');
+                wrapper.innerHTML = svgStr;
+                let svg = wrapper.firstChild;
+                svg.classList.add('absolute', 'animate-pulse');
+                svg.style.top = Math.random() * 100 + '%';
+                svg.style.left = Math.random() * 100 + '%';
+                svg.style.transform = `scale(${Math.random() * 1.5 + 0.5})`;
+                svg.style.animationDelay = (Math.random() * 2) + 's';
+                container.appendChild(svg);
+            }
+        }
+    </script>
+</body>
+</html>
