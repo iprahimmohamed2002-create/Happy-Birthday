@@ -93,11 +93,11 @@
 
     <!-- 1. LOADING SCREEN -->
     <div id="loading-screen" class="screen active flex-col items-center justify-center w-full h-screen bg-gradient-to-br from-[#ff9a9e] to-[#fecfef] text-white relative">
-        <div class="mb-6 transform hover:scale-105 transition-transform duration-300">
-            <!-- Ensure your Behance GIF is saved as 'cake.gif' in the same folder -->
-            <img src="cake.gif" alt="Birthday Cake GIF" onerror="this.src='https://media.giphy.com/media/W3yXWNbO3E9N1sY2Pq/giphy.gif'" class="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain drop-shadow-2xl rounded-2xl">
+        <div class="mb-2 md:mb-6 transform hover:scale-105 transition-transform duration-300">
+            <!-- Increased size significantly: takes up more width on mobile and up to 600px on desktop -->
+            <img src="cake.gif" alt="Birthday Cake GIF" onerror="this.src='https://media.giphy.com/media/W3yXWNbO3E9N1sY2Pq/giphy.gif'" class="w-[85vw] h-[85vw] sm:w-[400px] sm:h-[400px] md:w-[500px] md:h-[500px] lg:w-[600px] lg:h-[600px] object-contain drop-shadow-2xl">
         </div>
-        <h1 class="text-4xl md:text-5xl font-bold animate-pulse text-center px-4 drop-shadow-md">
+        <h1 class="text-4xl md:text-5xl font-bold animate-pulse text-center px-4 drop-shadow-md z-10">
             Happy 20th Birthday! <br /> <span class="font-cursive text-5xl md:text-6xl text-red-500 mt-2 block">Rana</span>
         </h1>
         <div class="absolute top-10 left-10 w-32 h-32 bg-white/20 rounded-full blur-2xl"></div>
